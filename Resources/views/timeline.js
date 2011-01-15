@@ -75,4 +75,7 @@ function getTimline () {
     };
     xhr.send();
 }
-getTimline();
+
+if ( !Ti.App.message ) {
+    getTimline();
+}

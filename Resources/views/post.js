@@ -21,33 +21,22 @@ var postButton = Ti.UI.createButton(
     }
 );
 
-function postComment () {
-    var comment = textArea.value;
-
-    var cookie = 'rk=' + Ti.App.userInfo.rk;
-    var xhr = Ti.Network.createHTTPClient();
-    xhr.open('POST','http://h.hatena.ne.jp/entry');
-    xhr.setRequestHeader('Cookie', cookie);
-    xhr.onload = function () {
-    };
-    xhr.send(
-        {
-            body: comment,
-            rkm: Ti.App.userInfo.rkm
-        }
-    );
-}
-
 postButton.addEventListener(
     'click',
-    postComment
+    function() {
+        var comment = textArea.value;
+        Ti.App.fireEvent('postComment',{comment:comment});
+    }
 );
 
 win.addEventListener(
-    'setMessage',
-    function() {
-        textArea.value = e.message;
+    'focus',
+    function(e) {
+        if ( Ti.App.message ) {
+            textArea.value = Ti.App.message;
+        }
     }
 );
 
 win.add(postButton);
+
