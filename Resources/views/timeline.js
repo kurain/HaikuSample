@@ -1,7 +1,43 @@
+Ti.include('../post_haiku.js');
 var win = Ti.UI.currentWindow;
-var tableView = Ti.UI.createTableView({
-    data:null
-});
+
+var textArea = Ti.UI.createTextArea(
+    {
+        top:  10,
+        width: 310,
+        height: 100,
+        left: 10,
+        value: (win.comment ? win.comment : '')
+    }
+);
+win.add(textArea);
+
+var postButton = Ti.UI.createButton(
+    {
+        top:  120,
+        width: 100,
+        height: 40,
+        right: 20,
+        title: '投稿'
+    }
+);
+
+postButton.addEventListener(
+    'click',
+    function() {
+        var comment = textArea.value;
+        Ti.App.fireEvent('postComment',{comment:comment});
+    }
+);
+win.add(postButton);
+
+
+var tableView = Ti.UI.createTableView(
+    {
+        top: 200,
+        data:null
+    }
+);
 win.add(tableView);
 
 function updateTimeline (timeline) {
@@ -63,8 +99,13 @@ function updateTimeline (timeline) {
     tableView.setData(currentData);
 }
 
-function getTimline () {
+function getTimeline () {
+    Ti.UI.createNotification({message:'タイムラインを更新します。'}).show();
     var xhr = Ti.Network.createHTTPClient();
+    if ( !Ti.App.userInfo ) {
+        Ti.UI.createNotification({message:'menuからログインしてください。'}).show();
+        return;
+    }
     var userName = Ti.App.userInfo.userName;
     var url = "http://h.hatena.ne.jp/api/statuses/friends_timeline/"+ userName +".json";
     xhr.open('GET', url);
@@ -76,6 +117,15 @@ function getTimline () {
     xhr.send();
 }
 
-if ( !Ti.App.message ) {
-    getTimline();
-}
+win.activity.onCreateOptionsMenu = function(e) {
+    Ti.API.debug('onCreateOptionsMenu');
+    var menu = e.menu;
+    var login = menu.add({ title: "ログイン" });
+    login.addEventListener("click", function(e) {
+        getLoginData(function(){getTimeline();});
+    });
+    var logout = menu.add({ title: "更新" });
+        logout.addEventListener("click", function(e) {
+        getTimeline();
+    });
+};
