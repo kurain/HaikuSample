@@ -31,7 +31,6 @@ postButton.addEventListener(
 );
 win.add(postButton);
 
-
 var tableView = Ti.UI.createTableView(
     {
         top: 200,
@@ -46,7 +45,7 @@ function updateTimeline (timeline) {
         var haiku = timeline[i];
         var row = Ti.UI.createTableViewRow(
             {
-                height: 'auto'
+                height: 140
             }
         );
         var imageView = Ti.UI.createImageView(
@@ -76,8 +75,8 @@ function updateTimeline (timeline) {
             {
                 width: 257,
                 left: 58,
-                top: 30,
-                height: 200,
+                top: 20,
+                height: 80,
                 fontSize: 8
             }
         );
@@ -88,7 +87,7 @@ function updateTimeline (timeline) {
                 width: 200,
                 height: 20,
                 left: 58,
-                bottom: 5,
+                top: 105,
                 fontSize: 6
             }
         );
@@ -117,14 +116,16 @@ function getTimeline () {
     xhr.send();
 }
 
+var LOGIN = 0;
+var UPDATE = 1;
 win.activity.onCreateOptionsMenu = function(e) {
     Ti.API.debug('onCreateOptionsMenu');
     var menu = e.menu;
-    var login = menu.add({ title: "ログイン" });
+    var login = menu.add({ title: "ログイン", itemId: LOGIN });
     login.addEventListener("click", function(e) {
         getLoginData(function(){getTimeline();});
     });
-    var logout = menu.add({ title: "更新" });
+    var logout = menu.add({ title: "更新", itemId: UPDATE });
         logout.addEventListener("click", function(e) {
         getTimeline();
     });
